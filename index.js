@@ -13,6 +13,7 @@ const btnEraserDec=document.getElementById('btn-eraser-dec');
 const HighlightModeBtn=document.getElementById('HighlightModeBtn');
 const twoDModeBtn=document.getElementById('twoDModeBtn');
 const clearAllBtn=document.getElementById('clearAll');
+const UndoBtn=document.getElementById('UndoBtn');
 
 let drawing = false;
 let startX = null, startY = null;
@@ -102,7 +103,19 @@ function updateEraserPosition() {
     isUpdating = false;
 }
 
+
+// undo
+UndoBtn.addEventListener('click', () => {
+    if (isFreehandMode) {
+        freeHandShapes.pop();
+    } else {
+        shapes.pop();
+    }
+    redrawCanvas();
+}
+);
 // for keydown keyup
+
 document.addEventListener('keydown', (e) => {
     if (e.key == 'e') {
         lineWidth += 1;
