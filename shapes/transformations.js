@@ -159,54 +159,64 @@ function applyRotation(shape, angle) {
        // same thing after rotating the circle
     } else if (shape.type === 'rectangle') {
         //taking all points
-        
-        
+        const cx = shape.x;
+    const cy = shape.y;
 
-    }
+    // Get all four corners of the rectangle
+    let points = [
+        { x: shape.x, y: shape.y }, // Top-left
+        { x: shape.x, y: shape.y1 }, // Top-right
+        { x: shape.x1, y: shape.y }, // Bottom-right
+        { x: shape.x1, y: shape.y1 }  // Bottom-left
+    ];
+
+    // Rotate each point around the center
+    points = points.map(point => {
+        let x = point.x - cx;
+        let y = point.y - cy;
+        return {
+            x: cx + (x * Math.cos(radians) - y * Math.sin(radians)),
+            y: cy + (x * Math.sin(radians) + y * Math.cos(radians))
+        };
+    });
+
+    // Create a new object with the rotated rectangle's coordinates
+    const rotatedRect = {
+        type: 'rotated-rectangle',
+        x1: Math.round(points[0].x), y1: Math.round(points[0].y), // Top-left
+        x2: Math.round(points[1].x), y2: Math.round(points[1].y), // Top-right
+        x3: Math.round(points[2].x), y3: Math.round(points[2].y), // Bottom-right
+        x4: Math.round(points[3].x), y4: Math.round(points[3].y)  // Bottom-left
+    };
+
+    // Push the new rotated rectangle into the shapes array
+    shape.rotatedRect=rotatedRect;
+
+    console.log(shape)}
 
 }
 
 function applyReflection(shape, axis) {
     if (axis === 'x') {
         if (shape.type === 'line') {
-            shape.y1 = 100+shape.y1;
-            shape.y2 = 100+shape.y2;
+            shape.y1 = 200+shape.y1;
+            shape.y2 = 200+shape.y2;
         } else if (shape.type === 'circle') {
-            shape.y = 100+shape.y;
+            shape.y = 200+shape.y;
         } else if (shape.type === 'rectangle') {
-            shape.y = 100+shape.y;
-            shape.y1= 100+shape.y1;
+            shape.y = 200+shape.y;
+            shape.y1= 200+shape.y1;
         }
     } else if (axis === 'y') {
         if (shape.type === 'line') {
-            shape.x1 = -100+shape.x1;
-            shape.x2 = -100+shape.x2;
+            shape.x1 = -200+shape.x1;
+            shape.x2 = -200+shape.x2;
         } else if (shape.type === 'circle') {
-            shape.x = -100+shape.x;
+            shape.x = -200+shape.x;
         } else if (shape.type === 'rectangle') {
-            shape.x = -100+shape.x;
-            shape.x1 = -100+shape.x
+            shape.x = -200+shape.x;
+            shape.x1 = -200+shape.x1;
         }
     }
 }
-
-
-// function applyShearing(shape, shx, shy) {
-//     if (shape.type === 'line') {
-//         return;
-
-
-//     } else if (shape.type === 'circle') {
-//         // Apply shearing to the center of the circle
-//         shape.x += shx * shape.y;
-//         shape.y += shy * shape.x;
-//     } else if (shape.type === 'rectangle') {
-//         // Apply shearing to the top-left corner of the rectangle
-//         shape.x += shx * shape.y;
-//         // shape.y += shy * shape.x;
-//         // Also apply shearing to the bottom-right corner
-//         shape.x2 += shx * shape.y2;
-//         // shape.y2 += shy * shape.x2;
-//     }
-// }
 

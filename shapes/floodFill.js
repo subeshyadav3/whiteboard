@@ -4,6 +4,7 @@ function floodFill(x, y, fillColor) {
     const width = canvas.width;
 
     const startIndex = (y * width + x) * 4;
+    console.log(startIndex);
     const targetColor = [pixels[startIndex], pixels[startIndex + 1], pixels[startIndex + 2]];
     console.log(targetColor);
     if (
@@ -34,7 +35,7 @@ function floodFill(x, y, fillColor) {
     let queue = [{ x, y }];
     let visited = new Set(); 
 
-    const boundaryColor = [255, 255, 255];  
+    const boundaryColor = [255,255,255];  
 
     while (queue.length > 0) {
         let { x, y } = queue.shift();
@@ -61,6 +62,6 @@ function floodFill(x, y, fillColor) {
             if (y < canvas.height - 1) queue.push({ x, y: y + 1 });
         }
     }
-
+  
     ctx.putImageData(canvasData, 0, 0);
 }

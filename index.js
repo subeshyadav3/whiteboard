@@ -10,6 +10,9 @@ const btnLineInc=document.getElementById('btn-line-inc');
 const btnLineDec=document.getElementById('btn-line-dec');
 const btnEraserInc=document.getElementById('btn-eraser-inc');
 const btnEraserDec=document.getElementById('btn-eraser-dec');
+const HighlightModeBtn=document.getElementById('HighlightModeBtn');
+const twoDModeBtn=document.getElementById('twoDModeBtn');
+const clearAllBtn=document.getElementById('clearAll');
 
 let drawing = false;
 let startX = null, startY = null;
@@ -19,14 +22,14 @@ let freeHandShapes = [];
 let eraserShapes = [];
 let isHighlighting = false;
 let lineWidth = 2;
-let selectedColor = '#000000';
+let selectedColor = '#FF6347';
 let lastX = 0;
 let lastY = 0;
 let isLineMode = false;
 let isCircleMode = false;
 let isRectMode = false;
 let isFreehandMode = true;
-let is2dTransformMode = true;
+let is2dTransformMode = false;
 const eraser = document.getElementById('eraserCursor');
 const eraserCursorBtn = document.getElementById('eraserCursorBtn');
 eraser.style.display = 'none';
@@ -36,7 +39,16 @@ let eraserX = 0, eraserY = 0;
 let isUpdating = false;
 let isFillMode = false;
 let isHighlightedMode = false;
+let isEraserTriggered = false;
 
+clearAllBtn.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    shapes = [];
+    freeHandShapes = [];
+
+});
+
+selectedColorShow.style.backgroundColor = selectedColor;
 colorSelector.forEach((button) => {
     button.addEventListener('click', () => {
         selectedColor = button.name;
@@ -48,6 +60,9 @@ colorSelector.forEach((button) => {
 
 eraserCursorBtn.addEventListener('click', () => {
     isEraserMode = !isEraserMode;
+    eraserCursorBtn.style.backgroundColor = isEraserMode ? 'red' : 'white';
+    showNotification(`Eraser Mode is ${isEraserMode?'On':'Off'} `);
+    isEraserTriggered = true;
     eraser.style.width = `${eraserSize}px`;
     eraser.style.height = `${eraserSize}px`;
     if (!isEraserMode) {
@@ -97,6 +112,7 @@ document.addEventListener('keydown', (e) => {
     }
     if (e.key == 'h') {
         isHighlightedMode = !isHighlightedMode;
+        showNotification(`Highlighting Mode is  ${isHighlightedMode?'On':'Off'} `);
     }
     if (e.key == 'b') {
         eraserSize += 10;
@@ -112,28 +128,34 @@ document.addEventListener('keydown', (e) => {
 });
 
 // for click on buttons
-
+// default values
+// btnEraserInc.childNodes[1].value=eraserSize;
+// btnLineInc.childNodes[1].value=lineWidth;
 btnEraserInc.addEventListener('click', () => {
     eraserSize += 10;
     btnEraserInc.childNodes[1].value=eraserSize;
+    btnEraserDec.childNodes[1].value='';
 }
-);
+);                      
 
 btnEraserDec.addEventListener('click', () => {
     eraserSize -= 10;
     btnEraserDec.childNodes[1].value=eraserSize;
+    btnEraserInc.childNodes[1].value='';
 }
 );
 
 btnLineInc.addEventListener('click', () => {
     lineWidth += 1;
     btnLineInc.childNodes[1].value=lineWidth;
+    btnLineDec.childNodes[1].value='';
 }
 );
 
 btnLineDec.addEventListener('click', () => {
     lineWidth -= 1;
     btnLineDec.childNodes[1].value=lineWidth;
+    btnLineInc.childNodes[1].value='';
 }
 );
 
@@ -167,21 +189,24 @@ function setMode(mode) {
 
 document.getElementById('fillBtn').addEventListener('click', () => {
     isFillMode = !isFillMode;
-
+    fillBtn.style.backgroundColor = isFillMode ? 'red' : 'white';
+    showNotification(`Fill Mode is ${isFillMode?'On':'Off'} `);
     console.log("Fill Mode changed");
     console.log(isFillMode);
 });
 
+
+
 canvas.addEventListener('click', (e) => {
-  
+
     if (isFillMode) {
         const x = e.offsetX;
         const y = e.offsetY;
         if(selectedColor=='#000000')  alert('Please select a color to fill');
         console.log(typeof selectedColor)
-        const fillColor = hexToRgb(selectedColor);
-        
-        console.log(fillColor);
+        const fillColor = hexToRgb  (selectedColor);
+        // const prevColor=hexToRgb(previousColor);
+        // console.log(fillColor,prevColor);
         floodFill(x, y, fillColor);
         
     }
@@ -214,6 +239,8 @@ canvas.addEventListener('mousedown', (e) => {
             }
         });
     }
+
+s
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -221,6 +248,32 @@ canvas.addEventListener('mousemove', (e) => {
     if (isFreehandMode) {
         handleFreehandDrawing(e, drawing, freeHandShapes);
     }
+
+    if(!isFillMode && !is2dTransformMode && !isEraserTriggered ){
+
+       redrawCanvas();
+        const x = e.offsetX;
+        const y = e.offsetY;
+        const width = x - startX;
+        const height = y - startY;
+        const radius = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2));
+        if (Math.abs(width) < 3 && Math.abs(height) < 3) {
+            return;
+        }
+        if (isLineMode) {
+
+            drawLineBresenham(startX, startY, x, y, ctx);
+        } else if (isCircleMode) {
+
+            drawCircle(startX, startY, radius, ctx);
+        } else if (isRectMode) {
+
+            drawRect(startX, startY, x, y, ctx);
+        }
+
+    }
+
+
 });
 
 canvas.addEventListener('mouseup', (e) => {
@@ -305,7 +358,17 @@ function redrawCanvas() {
         } else if (shape.type === 'circle') {
             drawCircle(shape.x, shape.y, shape.radius, ctx);
         } else if (shape.type === 'rectangle') {
-            drawRect(shape.x, shape.y, shape.x1, shape.y1, ctx);
+            
+            if(shape.rotatedRect){
+                drawLineBresenham(shape.rotatedRect.x1, shape.rotatedRect.y1, shape.rotatedRect.x2, shape.rotatedRect.y2, ctx);
+                drawLineBresenham(shape.rotatedRect.x1, shape.rotatedRect.y1, shape.rotatedRect.x3, shape.rotatedRect.y3, ctx);
+                drawLineBresenham(shape.rotatedRect.x2, shape.rotatedRect.y2, shape.rotatedRect.x4, shape.rotatedRect.y4, ctx);
+                drawLineBresenham(shape.rotatedRect.x3, shape.rotatedRect.y3, shape.rotatedRect.x4, shape.rotatedRect.y4, ctx);
+            }
+            else{
+                drawRect(shape.x, shape.y, shape.x1, shape.y1, ctx);
+            }
+            
         }
     });
     freeHandShapes.forEach(shape => {
@@ -323,11 +386,31 @@ function redrawCanvas() {
     });
 }
 
+HighlightModeBtn.addEventListener('click', () => {
+    isHighlightedMode = !isHighlightedMode;
+    HighlightModeBtn.style.backgroundColor = isHighlightedMode ? 'red' : 'white';
+    showNotification(`Highlighting Mode is ${isHighlightedMode?'On':'Off'} `);
+}
+
+);
+
+
+
+twoDModeBtn.addEventListener('click', () => {
+    is2dTransformMode = !is2dTransformMode;
+    twoDModeBtn.style.backgroundColor = is2dTransformMode ? 'red' : 'white';
+    showNotification(`2D Transformation Mode is ${is2dTransformMode?'On':'Off'} `);
+
+}
+
+);
+
 applyTransformBtn.addEventListener('click', () => {
     if (!selectedShape) {
         alert('No shape selected!');
         return;
     }
+    is2dTransformMode = true;
     let originalShape = { ...selectedShape };
     let translateX = parseFloat(document.getElementById('translateX').value);
     let translateY = parseFloat(document.getElementById('translateY').value);
@@ -340,7 +423,7 @@ applyTransformBtn.addEventListener('click', () => {
         return;
     }
     if (is2dTransformMode) {
-        let steps = 30;
+        let steps = reflectionAxis !== 'none' ? 1 : 30;
         let step = 0;
         function animateTransformation() {
             if (step >= steps || !is2dTransformMode) return;
@@ -371,4 +454,27 @@ applyTransformBtn.addEventListener('click', () => {
     document.getElementById('scaleY').value = 1;
     document.getElementById('rotateAngle').value = 0;
     document.getElementById('reflectionAxis').value = 'none';
+
+
 });
+
+
+function showNotification(message) {
+    const container = document.getElementById("notification-container");
+
+
+    const notification = document.createElement("div");
+    notification.className = "notification";
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">×</button>
+    `;
+
+
+    container.appendChild(notification);
+
+
+    setTimeout(() => {
+        notification.remove();
+    }, 2000);
+}
