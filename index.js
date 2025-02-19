@@ -33,7 +33,6 @@ const eraserCursorBtn = document.getElementById('eraserCursorBtn');
 const colorPickerBtn = document.getElementById('colorPickerBtn');
 const colorPicker = document.getElementById('colorPicker');
 
-
 // initializing default variables
 let drawing = false;
 let startX = null, startY = null;
@@ -79,10 +78,8 @@ eraserCursorBtn.addEventListener('click', () => {
     eraserCursorBtn.style.backgroundColor = isEraserMode ? 'red' : 'white';
     showNotification(`Eraser Mode is ${isEraserMode?'On':'Off'} `);
     isEraserTriggered = true;
-    eraser.style.width = `${eraserSize}px`;
-    eraser.style.height = `${eraserSize}px`;
+
     if (!isEraserMode) {
-        eraser.style.display = 'none';
         document.body.style.cursor = "default";
     } else {
         is2dTransformMode = false;
@@ -301,7 +298,6 @@ canvas.addEventListener('mousedown', (e) => {
         });
     }
 
-s
 });
 
 canvas.addEventListener('mousemove', (e) => {
