@@ -1,23 +1,10 @@
-
-
-/*
-Project Name: Interactive Whiteboard App
-Group Members:
-1. Sangam Paudel
-2. Saroj Rawal
-3. Subesh Yadav
-
-
-*/
-
-//  Initializing the canvas 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+
+const shapeList = document.getElementById('shapeList');
 const width = canvas.width;
 const height = canvas.height;
-
-// initializing all buttons for manipulation
-const shapeList = document.getElementById('shapeList');
 const applyTransformBtn = document.getElementById('applyTransformBtn');
 const selectedColorShow = document.getElementById('selectedColorShow');
 const colorSelector = document.querySelectorAll('.colorSelector button');
@@ -29,12 +16,7 @@ const HighlightModeBtn=document.getElementById('HighlightModeBtn');
 const twoDModeBtn=document.getElementById('twoDModeBtn');
 const clearAllBtn=document.getElementById('clearAll');
 const UndoBtn=document.getElementById('UndoBtn');
-const eraserCursorBtn = document.getElementById('eraserCursorBtn');
-const colorPickerBtn = document.getElementById('colorPickerBtn');
-const colorPicker = document.getElementById('colorPicker');
 
-
-// initializing default variables
 let drawing = false;
 let startX = null, startY = null;
 let selectedShape = null;
@@ -51,6 +33,9 @@ let isCircleMode = false;
 let isRectMode = false;
 let isFreehandMode = true;
 let is2dTransformMode = false;
+const eraser = document.getElementById('eraserCursor');
+const eraserCursorBtn = document.getElementById('eraserCursorBtn');
+eraser.style.display = 'none';
 let isEraserMode = false;
 let eraserSize = 70;
 let eraserX = 0, eraserY = 0;
@@ -59,12 +44,6 @@ let isFillMode = false;
 let isHighlightedMode = false;
 let isEraserTriggered = false;
 
-// default color 
-selectedColorShow.style.backgroundColor = selectedColor;
-
-// all event handling like click, mousemove, mousedown, mouseup, keydown, keyup
-
-// for erasing all
 clearAllBtn.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes = [];
@@ -72,7 +51,17 @@ clearAllBtn.addEventListener('click', () => {
 
 });
 
-// for selective erasing
+selectedColorShow.style.backgroundColor = selectedColor;
+colorSelector.forEach((button) => {
+    button.addEventListener('click', () => {
+        selectedColor = button.name;
+        console.log(selectedColor);
+        selectedColorShow.style.backgroundColor = selectedColor;
+        console.log(selectedColor);
+
+        colorPickerBtn.style.backgroundColor = selectedColor;
+    });
+});
 
 eraserCursorBtn.addEventListener('click', () => {
     isEraserMode = !isEraserMode;
@@ -107,20 +96,6 @@ canvas.addEventListener('mousemove', (e) => {
     }
 });
 
-
-
-colorSelector.forEach((button) => {
-    button.addEventListener('click', () => {
-        selectedColor = button.name;
-        console.log(selectedColor);
-        selectedColorShow.style.backgroundColor = selectedColor;
-        console.log(selectedColor);
-
-        colorPickerBtn.style.backgroundColor = selectedColor;
-    });
-});
-
-
 function updateEraserPosition() {
     ctx.beginPath();
     ctx.strokeStyle = 'black';
@@ -133,9 +108,7 @@ function updateEraserPosition() {
 }
 
 
-
-
-// undo event 
+// undo
 UndoBtn.addEventListener('click', () => {
     if (isFreehandMode) {
         freeHandShapes.pop();
@@ -145,9 +118,7 @@ UndoBtn.addEventListener('click', () => {
     redrawCanvas();
 }
 );
-
-
-// handling modes with key press
+// for keydown keyup
 
 document.addEventListener('keydown', (e) => {
     if (e.key == 'e') {
@@ -173,9 +144,10 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-
-// handling all the modes onclick
-
+// for click on buttons
+// default values
+// btnEraserInc.childNodes[1].value=eraserSize;
+// btnLineInc.childNodes[1].value=lineWidth;
 btnEraserInc.addEventListener('click', () => {
     eraserSize += 10;
     btnEraserInc.childNodes[1].value=eraserSize;
@@ -204,27 +176,12 @@ btnLineDec.addEventListener('click', () => {
 }
 );
 
-// for highlighting mode and 2d transformation mode
-
-HighlightModeBtn.addEventListener('click', () => {
-    isHighlightedMode = !isHighlightedMode;
-    HighlightModeBtn.style.backgroundColor = isHighlightedMode ? 'red' : 'white';
-    showNotification(`Highlighting Mode is ${isHighlightedMode?'On':'Off'} `);
-}
-
-);
-
-twoDModeBtn.addEventListener('click', () => {
-    is2dTransformMode = !is2dTransformMode;
-    twoDModeBtn.style.backgroundColor = is2dTransformMode ? 'red' : 'white';
-    showNotification(`2D Transformation Mode is ${is2dTransformMode?'On':'Off'} `);
-
-}
-
-);
 
 
-// event to pick the color
+
+
+const colorPickerBtn = document.getElementById('colorPickerBtn');
+const colorPicker = document.getElementById('colorPicker');
 
 colorPicker.addEventListener('input', (e) => {
     selectedColor = e.target.value;
@@ -233,8 +190,6 @@ colorPicker.addEventListener('input', (e) => {
     colorPickerBtn.style.backgroundColor = selectedColor;
     if(colorPickerBtn.style.backgroundColor<='rgb(20, 20, 20)') colorPickerBtn.style.color='white';
 });
-
-// for toggling between drawing modes 
 
 document.getElementById('lineModeBtn').addEventListener('click', () => setMode('line'));
 document.getElementById('circleModeBtn').addEventListener('click', () => setMode('circle'));
@@ -248,7 +203,6 @@ function setMode(mode) {
     isFreehandMode = mode === 'freehand';
 }
 
-// event for filling the color
 
 document.getElementById('fillBtn').addEventListener('click', () => {
     isFillMode = !isFillMode;
@@ -268,11 +222,13 @@ canvas.addEventListener('click', (e) => {
         if(selectedColor=='#000000')  alert('Please select a color to fill');
         console.log(typeof selectedColor)
         const fillColor = hexToRgb  (selectedColor);
+        // const prevColor=hexToRgb(previousColor);
+        // console.log(fillColor,prevColor);
         floodFill(x, y, fillColor);
         
     }
 });
-// takes hex and conver to rgb
+
 function hexToRgb(hex) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -281,13 +237,13 @@ function hexToRgb(hex) {
 }
 
 
-// game starts here, for drawing the shapes
-
 canvas.addEventListener('mousedown', (e) => {
     startX = e.offsetX;
     startY = e.offsetY;
     drawing = true;
+    isHighlighting = false;
     isEraserMode = false;
+    eraser.style.display = 'none';
     document.body.style.cursor = "default";
     if (isFreehandMode) {
         freeHandShapes.push({ type: 'freehand', points: [{ x: startX, y: startY }], color: selectedColor, lineWidth: lineWidth });
@@ -311,6 +267,7 @@ canvas.addEventListener('mousemove', (e) => {
     }
 
     if(!isFillMode && !is2dTransformMode && !isEraserTriggered ){
+
        redrawCanvas();
         const x = e.offsetX;
         const y = e.offsetY;
@@ -362,8 +319,22 @@ canvas.addEventListener('mouseup', (e) => {
     }
 });
 
+function addShapeToList(shape) {
+    const li = document.createElement('li');
+    li.textContent = `${shape.type} (${Math.round(shape.x1 || shape.x)} ${Math.round(shape.y1 || shape.y)})`;
+    li.addEventListener('click', () => selectShape(shape, li));
+    shapeList.appendChild(li);
+}
 
-// for handling highlight mode
+function selectShape(shape, li) {
+    if (selectedShape) {
+        const prevLi = document.querySelector('.selected');
+        if (prevLi) prevLi.classList.remove('selected');
+    }
+    selectedShape = shape;
+    li.classList.add('selected');
+    highlightSelectedShape(shape);
+}
 
 function highlightSelectedShape(shape) {
     ctx.strokeStyle = 'red';
@@ -377,8 +348,6 @@ function highlightSelectedShape(shape) {
     }
 }
 
-// checking if clicked point is in the shape
-
 function isPointInShape(x, y, shape) {
     if (shape.type === 'rectangle') {
         return x >= shape.x && x <= shape.x1 && y >= shape.y && y <= shape.y1;
@@ -391,8 +360,6 @@ function isPointInShape(x, y, shape) {
     return false;
 }
 
-// specifically for line with threshold value of 2
-
 function isPointNearLine(px, py, line) {
     const x1 = line.x1, y1 = line.y1, x2 = line.x2, y2 = line.y2;
     const lineLength = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
@@ -400,7 +367,6 @@ function isPointNearLine(px, py, line) {
     return distance < 2;
 }
 
-// redraw logic for animating the 2d's
 function redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
@@ -437,12 +403,28 @@ function redrawCanvas() {
     });
 }
 
+HighlightModeBtn.addEventListener('click', () => {
+    isHighlightedMode = !isHighlightedMode;
+    HighlightModeBtn.style.backgroundColor = isHighlightedMode ? 'red' : 'white';
+    showNotification(`Highlighting Mode is ${isHighlightedMode?'On':'Off'} `);
+}
 
-// 2d transformation with animation 
+);
+
+
+
+twoDModeBtn.addEventListener('click', () => {
+    is2dTransformMode = !is2dTransformMode;
+    twoDModeBtn.style.backgroundColor = is2dTransformMode ? 'red' : 'white';
+    showNotification(`2D Transformation Mode is ${is2dTransformMode?'On':'Off'} `);
+
+}
+
+);
 
 applyTransformBtn.addEventListener('click', () => {
     if (!selectedShape) {
-        notification('Please select a shape to transform');
+        alert('No shape selected!');
         return;
     }
     is2dTransformMode = true;
@@ -476,7 +458,6 @@ applyTransformBtn.addEventListener('click', () => {
             if (reflectionAxis !== 'none' && step === steps - 1) {
                 applyReflection(tempShape, reflectionAxis);
             }
-
             Object.assign(selectedShape, tempShape);
             redrawCanvas();
             step++;
@@ -484,8 +465,6 @@ applyTransformBtn.addEventListener('click', () => {
         }
         animateTransformation();
     }
-
-    // resetting to default values
     document.getElementById('translateX').value = 0;
     document.getElementById('translateY').value = 0;
     document.getElementById('scaleX').value = 1;
@@ -497,17 +476,21 @@ applyTransformBtn.addEventListener('click', () => {
 });
 
 
-// extra things for notifcation
-
 function showNotification(message) {
     const container = document.getElementById("notification-container");
+
+
     const notification = document.createElement("div");
     notification.className = "notification";
     notification.innerHTML = `
         <span>${message}</span>
         <button onclick="this.parentElement.remove()">×</button>
     `;
+
+
     container.appendChild(notification);
+
+
     setTimeout(() => {
         notification.remove();
     }, 2000);

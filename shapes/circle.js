@@ -1,32 +1,33 @@
 function drawCircle(x, y, r, ctx) {
-    ctx.beginPath();
-  
-    ctx.strokeStyle = isHighlighting ? 'red' : selectedColor;
-    ctx.fillStyle = isHighlighting ? 'red' : selectedColor;
-
-    let xc = x;
-    let yc = y;
-    let d = 1 - r;
-    let xi = 0;
-    let yi = r;
-
-    ctx.fillRect(xc + xi, yc + yi, 1, 1);
-    ctx.fillRect(xc - xi, yc + yi, 1, 1);
-    ctx.fillRect(xc + xi, yc - yi, 1, 1);
-    ctx.fillRect(xc - xi, yc - yi, 1, 1);
-    ctx.fillRect(xc + yi, yc + xi, 1, 1);
-    ctx.fillRect(xc - yi, yc + xi, 1, 1);
-    ctx.fillRect(xc + yi, yc - xi, 1, 1);
-    ctx.fillRect(xc - yi, yc - xi, 1, 1);
+    let xc = x;  
+    let yc = y;   
+    let xi = 0;   
+    let yi = r;   
+    let d = 1 - r; 
+    ctx.fillStyle= isHighlighting ? "red" : selectedColor;
+    
+    //  initial points
+    ctx.fillRect(xc + xi, yc + yi, 1, 1); 
+    ctx.fillRect(xc - xi, yc + yi, 1, 1); 
+    ctx.fillRect(xc + xi, yc - yi, 1, 1); 
+    ctx.fillRect(xc - xi, yc - yi, 1, 1); 
+    ctx.fillRect(xc + yi, yc + xi, 1, 1); 
+    ctx.fillRect(xc - yi, yc + xi, 1, 1); 
+    ctx.fillRect(xc + yi, yc - xi, 1, 1); 
+    ctx.fillRect(xc - yi, yc - xi, 1, 1); 
 
     while (xi < yi) {
         if (d < 0) {
-            d += 2 * xi + 3;
+
+            xi++;
+            d = d + 2 * xi + 1;
         } else {
-            d += 2 * (xi - yi) + 5;
+
+            xi++;
             yi--;
+            d = d + 2 * (xi - yi) + 1;
         }
-        xi++;
+
 
         ctx.fillRect(xc + xi, yc + yi, 1, 1);
         ctx.fillRect(xc - xi, yc + yi, 1, 1);
@@ -37,6 +38,4 @@ function drawCircle(x, y, r, ctx) {
         ctx.fillRect(xc + yi, yc - xi, 1, 1);
         ctx.fillRect(xc - yi, yc - xi, 1, 1);
     }
-
-   
 }

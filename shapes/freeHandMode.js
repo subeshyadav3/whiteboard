@@ -5,7 +5,7 @@ function handleFreehandDrawing(e, drawing, freeHandShapes) {
     const currentY = e.offsetY;
     
     const lastShape = freeHandShapes[freeHandShapes.length - 1];
-
+    // if no points return
     if (!lastShape || !lastShape.points || lastShape.points.length === 0) {
         return;
     }
@@ -17,7 +17,7 @@ function handleFreehandDrawing(e, drawing, freeHandShapes) {
     ctx.lineWidth = lastShape.lineWidth;
     ctx.strokeStyle = lastShape.color; 
     
-
+    // goes to certain pixel and draws a pixel
     ctx.moveTo(lastPoint.x, lastPoint.y);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();

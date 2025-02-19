@@ -13,10 +13,12 @@ function drawLineBresenham(x0, y0, x1, y1, ctx) {
     let sy = (y0 < y1) ? 1 : -1;
     let err = dx - dy;
 
-    ctx.moveTo(Math.round(x0), Math.round(y0));   //anti-aliasing by rounding
+    ctx.moveTo(Math.round(x0), Math.round(y0));  
+
 
     while (x0 !== x1 || y0 !== y1) {
         ctx.lineTo(Math.round(x1), Math.round(y1)); 
+
 
         let e2 = 2 * err;
         if (e2 > -dy) { 

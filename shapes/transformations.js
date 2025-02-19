@@ -11,8 +11,6 @@ function applyTranslation(shape, tx, ty) {
         shape.x2 = Math.round(shape.x2);
         shape.y2 = Math.round(shape.y2);
 
-            console.log('Line:', JSON.stringify(shape));
-
     } else if (shape.type === 'circle') {
         shape.x += tx;
         shape.y += ty;
@@ -32,10 +30,7 @@ function applyTranslation(shape, tx, ty) {
 }
 
 
-
 function applyScaling(shape, sx, sy) {
-    // console.log('Before Scaling:', JSON.stringify(shape)); 
-    // console.log(typeof(shape.x1));
 
     if (shape.type === 'line') {
 
@@ -76,10 +71,10 @@ function applyScaling(shape, sx, sy) {
         shape.x -= centerX;
         shape.y -= centerY;
 
-        // redrawCanvas();
+
         shape.radius *= sx;
 
-        // redrawCanvas();
+
         shape.x += centerX;
         shape.y += centerY;
 
@@ -114,8 +109,7 @@ function applyScaling(shape, sx, sy) {
 
     }
 
-    // console.log('After Scaling:', JSON.stringify(shape)); 
-    
+
 
 }
 
@@ -127,13 +121,13 @@ function applyRotation(shape, angle) {
         const cx = shape.x1 
         const cy = shape.y1 
 
-        // Translate line to origin
+ 
         shape.x1 -= cx;
         shape.y1 -= cy;
         shape.x2 -= cx;
         shape.y2 -= cy;
 
-        // Rotate the endpoints
+
         const cosTheta = Math.cos(radians);
         const sinTheta = Math.sin(radians);
 
@@ -142,7 +136,7 @@ function applyRotation(shape, angle) {
         const newX2 = shape.x2 * cosTheta - shape.y2 * sinTheta;
         const newY2 = shape.x2 * sinTheta + shape.y2 * cosTheta;
 
-        // Translate back to the original center
+
         shape.x1 = newX1 + cx;
         shape.y1 = newY1 + cy;
         shape.x2 = newX2 + cx;
@@ -158,19 +152,18 @@ function applyRotation(shape, angle) {
     } else if (shape.type === 'circle') {
        // same thing after rotating the circle
     } else if (shape.type === 'rectangle') {
-        //taking all points
+
         const cx = shape.x;
     const cy = shape.y;
 
-    // Get all four corners of the rectangle
+
     let points = [
-        { x: shape.x, y: shape.y }, // Top-left
-        { x: shape.x, y: shape.y1 }, // Top-right
-        { x: shape.x1, y: shape.y }, // Bottom-right
-        { x: shape.x1, y: shape.y1 }  // Bottom-left
+        { x: shape.x, y: shape.y }, 
+        { x: shape.x, y: shape.y1 }, 
+        { x: shape.x1, y: shape.y }, 
+        { x: shape.x1, y: shape.y1 }  
     ];
 
-    // Rotate each point around the center
     points = points.map(point => {
         let x = point.x - cx;
         let y = point.y - cy;
@@ -180,16 +173,14 @@ function applyRotation(shape, angle) {
         };
     });
 
-    // Create a new object with the rotated rectangle's coordinates
     const rotatedRect = {
         type: 'rotated-rectangle',
-        x1: Math.round(points[0].x), y1: Math.round(points[0].y), // Top-left
-        x2: Math.round(points[1].x), y2: Math.round(points[1].y), // Top-right
-        x3: Math.round(points[2].x), y3: Math.round(points[2].y), // Bottom-right
-        x4: Math.round(points[3].x), y4: Math.round(points[3].y)  // Bottom-left
+        x1: Math.round(points[0].x), y1: Math.round(points[0].y),
+        x2: Math.round(points[1].x), y2: Math.round(points[1].y), 
+        x3: Math.round(points[2].x), y3: Math.round(points[2].y),
+        x4: Math.round(points[3].x), y4: Math.round(points[3].y)  
     };
-
-    // Push the new rotated rectangle into the shapes array
+        // push rotatedRect
     shape.rotatedRect=rotatedRect;
 
     console.log(shape)}
