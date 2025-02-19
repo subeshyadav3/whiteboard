@@ -153,35 +153,40 @@ function applyRotation(shape, angle) {
        // same thing after rotating the circle
     } else if (shape.type === 'rectangle') {
 
-        const cx = shape.x;
-    const cy = shape.y;
+        const cx = shape.x1;
+        const cy = shape.y1;
 
+        shape.x1 -= cx;
+        shape.y1 -= cy;
+        shape.x2 -= cx;
+        shape.y2 -= cy;
+        shape.x3 -= cx;
+        shape.y3 -= cy;
+        shape.x4 -= cx;
+        shape.y4 -= cy;
 
-    let points = [
-        { x: shape.x, y: shape.y }, 
-        { x: shape.x, y: shape.y1 }, 
-        { x: shape.x1, y: shape.y }, 
-        { x: shape.x1, y: shape.y1 }  
-    ];
+        //rotate
+        const cosTheta = Math.cos(radians);
+        const sinTheta = Math.sin(radians);
 
-    points = points.map(point => {
-        let x = point.x - cx;
-        let y = point.y - cy;
-        return {
-            x: cx + (x * Math.cos(radians) - y * Math.sin(radians)),
-            y: cy + (x * Math.sin(radians) + y * Math.cos(radians))
-        };
-    });
+        const newX1 = shape.x1 * cosTheta - shape.y1 * sinTheta;
+        const newY1 = shape.x1 * sinTheta + shape.y1 * cosTheta;
+        const newX2 = shape.x2 * cosTheta - shape.y2 * sinTheta;
+        const newY2 = shape.x2 * sinTheta + shape.y2 * cosTheta;
+        const newX3 = shape.x3 * cosTheta - shape.y3 * sinTheta;
+        const newY3 = shape.x3 * sinTheta + shape.y3 * cosTheta;
+        const newX4 = shape.x4 * cosTheta - shape.y4 * sinTheta;
+        const newY4 = shape.x4 * sinTheta + shape.y4 * cosTheta;
 
-    const rotatedRect = {
-        type: 'rotated-rectangle',
-        x1: Math.round(points[0].x), y1: Math.round(points[0].y),
-        x2: Math.round(points[1].x), y2: Math.round(points[1].y), 
-        x3: Math.round(points[2].x), y3: Math.round(points[2].y),
-        x4: Math.round(points[3].x), y4: Math.round(points[3].y)  
-    };
-        // push rotatedRect
-    shape.rotatedRect=rotatedRect;
+        shape.x1 = Math.round(newX1 + cx);
+        shape.y1 = Math.round(newY1 + cy);
+        shape.x2 = Math.round(newX2 + cx);
+        shape.y2 = Math.round(newY2 + cy);
+        shape.x3 = Math.round(newX3 + cx);
+        shape.y3 = Math.round(newY3 + cy);
+        shape.x4 = Math.round(newX4 + cx);
+        shape.y4 = Math.round(newY4 + cy);
+
 
     console.log(shape)}
 

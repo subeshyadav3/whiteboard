@@ -56,7 +56,7 @@ let eraserX = 0, eraserY = 0;
 let isUpdating = false;
 let isFillMode = false;
 let isHighlightedMode = false;
-let isEraserTriggered = false;
+let isFillEraserTriggered = false;
 
 // default color 
 selectedColorShow.style.backgroundColor = selectedColor;
@@ -77,7 +77,7 @@ eraserCursorBtn.addEventListener('click', () => {
     isEraserMode = !isEraserMode;
     eraserCursorBtn.style.backgroundColor = isEraserMode ? 'red' : 'white';
     showNotification(`Eraser Mode is ${isEraserMode?'On':'Off'} `);
-    isEraserTriggered = true;
+    isFillEraserTriggered = true;
 
     if (!isEraserMode) {
         document.body.style.cursor = "default";
@@ -249,6 +249,7 @@ function setMode(mode) {
 
 document.getElementById('fillBtn').addEventListener('click', () => {
     isFillMode = !isFillMode;
+    isFillEraserTriggered = true;
     fillBtn.style.backgroundColor = isFillMode ? 'red' : 'white';
     showNotification(`Fill Mode is ${isFillMode?'On':'Off'} `);
     console.log("Fill Mode changed");
@@ -306,7 +307,7 @@ canvas.addEventListener('mousemove', (e) => {
         handleFreehandDrawing(e, drawing, freeHandShapes);
     }
 
-    if(!isFillMode && !is2dTransformMode && !isEraserTriggered ){
+    if(!isFillMode && !is2dTransformMode && !isFillEraserTriggered ){
        redrawCanvas();
         const x = e.offsetX;
         const y = e.offsetY;
@@ -324,7 +325,7 @@ canvas.addEventListener('mousemove', (e) => {
             drawCircle(startX, startY, radius, ctx);
         } else if (isRectMode) {
 
-            drawRect(startX, startY, x, y, ctx);
+            drawRect(startX,startY,x,startY,startX,y,x,y, ctx);
         }
 
     }
@@ -352,8 +353,9 @@ canvas.addEventListener('mouseup', (e) => {
             shapes.push({ type: 'circle', x: startX, y: startY, radius: radius });
             drawCircle(startX, startY, radius, ctx);
         } else if (isRectMode) {
-            shapes.push({ type: 'rectangle', x: startX, y: startY, x1: x, y1: y });
-            drawRect(startX, startY, x, y, ctx);
+            shapes.push({type:'rectangle',x1:startX,y1:startY,x2:x,y2:startY,x3:startX,y3:y,x4:x,y4:y});
+            drawRect(startX,startY,x,startY,startX,y,x,y, ctx);
+           
         }
     }
 });
@@ -369,7 +371,7 @@ function highlightSelectedShape(shape) {
     } else if (shape.type === 'circle') {
         drawCircle(shape.x, shape.y, shape.radius, ctx);
     } else if (shape.type === 'rectangle') {
-        drawRect(shape.x, shape.y, shape.x1, shape.y1, ctx);
+        drawRect(shape.x1,shape.y1,shape.x2,shape.y2,shape.x3,shape.y3,shape.x4,shape.y4,  ctx);
     }
 }
 
@@ -377,7 +379,7 @@ function highlightSelectedShape(shape) {
 
 function isPointInShape(x, y, shape) {
     if (shape.type === 'rectangle') {
-        return x >= shape.x && x <= shape.x1 && y >= shape.y && y <= shape.y1;
+        return x >= shape.x1 && x <= shape.x4 && y >= shape.y1 && y <= shape.y4;
     } else if (shape.type === 'circle') {
         const dist = Math.sqrt(Math.pow(x - shape.x, 2) + Math.pow(y - shape.y, 2));
         return dist <= shape.radius;
@@ -405,16 +407,7 @@ function redrawCanvas() {
         } else if (shape.type === 'circle') {
             drawCircle(shape.x, shape.y, shape.radius, ctx);
         } else if (shape.type === 'rectangle') {
-            
-            if(shape.rotatedRect){
-                drawLineBresenham(shape.rotatedRect.x1, shape.rotatedRect.y1, shape.rotatedRect.x2, shape.rotatedRect.y2, ctx);
-                drawLineBresenham(shape.rotatedRect.x1, shape.rotatedRect.y1, shape.rotatedRect.x3, shape.rotatedRect.y3, ctx);
-                drawLineBresenham(shape.rotatedRect.x2, shape.rotatedRect.y2, shape.rotatedRect.x4, shape.rotatedRect.y4, ctx);
-                drawLineBresenham(shape.rotatedRect.x3, shape.rotatedRect.y3, shape.rotatedRect.x4, shape.rotatedRect.y4, ctx);
-            }
-            else{
-                drawRect(shape.x, shape.y, shape.x1, shape.y1, ctx);
-            }
+            drawRect(shape.x1,shape.y1,shape.x2,shape.y2,shape.x3,shape.y3,shape.x4,shape.y4,  ctx);
             
         }
     });
