@@ -1,11 +1,9 @@
-function drawLineBresenham(x0, y0, x1, y1, ctx) {
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth;  
+function drawLineBresenham(x0, y0, x1, y1, ctx,shape) {
 
-    ctx.lineWidth =isHighlighting ? 3 : lineWidth;
-    ctx.strokeStyle = isHighlighting ? 'red' : selectedColor;
-    
-  
+    ctx.beginPath(); 
+
+    ctx.lineWidth = currentPaintingShape? currentPaintingShape.isHighlighted? 3 : currentPaintingShape.lineWidth : lineWidth;
+    ctx.strokeStyle = currentPaintingShape? currentPaintingShape.isHighlighted? 'red' : currentPaintingShape.color : selectedColor;
 
     let dx = Math.abs(x1 - x0);
     let dy = Math.abs(y1 - y0);

@@ -4,7 +4,7 @@ function drawCircle(x, y, r, ctx) {
     let xi = 0;   
     let yi = r;   
     let d = 1 - r; 
-    ctx.fillStyle= isHighlighting ? "red" : selectedColor;
+    ctx.fillStyle=  currentPaintingShape? currentPaintingShape.isHighlighted? 'red' : currentPaintingShape.color : selectedColor;
     
     //  initial points
     ctx.fillRect(xc + xi, yc + yi, 1, 1); 

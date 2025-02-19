@@ -40,7 +40,6 @@ let selectedShape = null;
 let shapes = [];
 let freeHandShapes = [];
 let eraserShapes = [];
-let isHighlighting = false;
 let lineWidth = 2;
 let selectedColor = '#FF6347';
 let lastX = 0;
@@ -57,6 +56,7 @@ let isUpdating = false;
 let isFillMode = false;
 let isHighlightedMode = false;
 let isFillEraserTriggered = false;
+let currentPaintingShape=null
 
 // default color 
 selectedColorShow.style.backgroundColor = selectedColor;
@@ -88,7 +88,6 @@ eraserCursorBtn.addEventListener('click', () => {
         isRectMode = false;
         isFreehandMode = false;
         drawing = false;
-        isHighlighting = false;
         isHighlightedMode = false;
     }
 });
@@ -298,7 +297,7 @@ canvas.addEventListener('mousedown', (e) => {
             }
         });
     }
-
+    currentPaintingShape={color:selectedColor,lineWidth:lineWidth};
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -347,13 +346,13 @@ canvas.addEventListener('mouseup', (e) => {
             return;
         }
         if (isLineMode) {
-            shapes.push({ type: 'line', x1: startX, y1: startY, x2: x, y2: y });
+            shapes.push({ type: 'line', x1: startX, y1: startY, x2: x, y2: y ,color:selectedColor,lineWidth:lineWidth});
             drawLineBresenham(startX, startY, x, y, ctx);
         } else if (isCircleMode) {
-            shapes.push({ type: 'circle', x: startX, y: startY, radius: radius });
+            shapes.push({ type: 'circle', x: startX, y: startY, radius: radius , color:selectedColor,lineWidth:lineWidth}); 
             drawCircle(startX, startY, radius, ctx);
         } else if (isRectMode) {
-            shapes.push({type:'rectangle',x1:startX,y1:startY,x2:x,y2:startY,x3:startX,y3:y,x4:x,y4:y});
+            shapes.push({type:'rectangle',x1:startX,y1:startY,x2:x,y2:startY,x3:startX,y3:y,x4:x,y4:y,color:selectedColor,lineWidth:lineWidth});
             drawRect(startX,startY,x,startY,startX,y,x,y, ctx);
            
         }
@@ -364,8 +363,7 @@ canvas.addEventListener('mouseup', (e) => {
 // for handling highlight mode
 
 function highlightSelectedShape(shape) {
-    ctx.strokeStyle = 'red';
-    isHighlighting = true;
+    currentPaintingShape ={color:selectedColor,lineWidth:lineWidth,isHighlighted:true};
     if (shape.type === 'line') {
         drawLineBresenham(shape.x1, shape.y1, shape.x2, shape.y2, ctx);
     } else if (shape.type === 'circle') {
@@ -399,9 +397,13 @@ function isPointNearLine(px, py, line) {
 }
 
 // redraw logic for animating the 2d's
+
 function redrawCanvas() {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
+        currentPaintingShape = shape;
+        console.log("true")
         if (shape.type === 'line') {
             drawLineBresenham(shape.x1, shape.y1, shape.x2, shape.y2, ctx);
         } else if (shape.type === 'circle') {
@@ -411,8 +413,10 @@ function redrawCanvas() {
             
         }
     });
+    currentPaintingShape = null;
     freeHandShapes.forEach(shape => {
         shape.points.forEach((point, index) => {
+
             if (index > 0) {
                 const prevPoint = shape.points[index - 1];
                 ctx.beginPath();
@@ -424,6 +428,7 @@ function redrawCanvas() {
             }
         });
     });
+
 }
 
 
