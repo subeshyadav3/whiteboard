@@ -148,12 +148,13 @@ h1 {
 .input-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  
 }
 
 .input-group label {
   font-size: 0.9rem;
   color: #7f8c8d;
+  
 }
 
 .input-group input,

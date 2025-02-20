@@ -193,26 +193,34 @@ function applyRotation(shape, angle) {
 }
 
 function applyReflection(shape, axis) {
-    if (axis === 'x') {
-        if (shape.type === 'line') {
-            shape.y1 = 200+shape.y1;
-            shape.y2 = 200+shape.y2;
-        } else if (shape.type === 'circle') {
-            shape.y = 200+shape.y;
-        } else if (shape.type === 'rectangle') {
-            shape.y = 200+shape.y;
-            shape.y1= 200+shape.y1;
-        }
-    } else if (axis === 'y') {
-        if (shape.type === 'line') {
-            shape.x1 = -200+shape.x1;
-            shape.x2 = -200+shape.x2;
-        } else if (shape.type === 'circle') {
-            shape.x = -200+shape.x;
-        } else if (shape.type === 'rectangle') {
-            shape.x = -200+shape.x;
-            shape.x1 = -200+shape.x1;
-        }
+   const canvasCenterX = canvas.width / 2;
+const canvasCenterY = canvas.height / 2;
+
+if (axis === 'x') {
+    if (shape.type === 'line') {
+        shape.y1 = canvasCenterY - (shape.y1 - canvasCenterY); 
+        shape.y2 = canvasCenterY - (shape.y2 - canvasCenterY); 
+    } else if (shape.type === 'circle') {
+        shape.y = canvasCenterY - (shape.y - canvasCenterY);
+    } else if (shape.type === 'rectangle') {
+        shape.y1 = canvasCenterY - (shape.y1 - canvasCenterY);
+        shape.y2 = canvasCenterY - (shape.y2 - canvasCenterY);
+        shape.y3 = canvasCenterY - (shape.y3 - canvasCenterY);
+        shape.y4 = canvasCenterY - (shape.y4 - canvasCenterY);
     }
+} else if (axis === 'y') {
+    if (shape.type === 'line') {
+        shape.x1 = canvasCenterX - (shape.x1 - canvasCenterX); 
+        shape.x2 = canvasCenterX - (shape.x2 - canvasCenterX); 
+    } else if (shape.type === 'circle') {
+        shape.x = canvasCenterX - (shape.x - canvasCenterX);
+    } else if (shape.type === 'rectangle') {
+        shape.x1 = canvasCenterX - (shape.x1 - canvasCenterX);
+        shape.x2 = canvasCenterX - (shape.x2 - canvasCenterX);
+        shape.x3 = canvasCenterX - (shape.x3 - canvasCenterX);
+        shape.x4 = canvasCenterX - (shape.x4 - canvasCenterX);
+    }
+}
+    
 }
 

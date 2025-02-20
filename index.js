@@ -45,6 +45,8 @@ let selectedColor = '#FF6347';
 let lastX = 0;
 let lastY = 0;
 let isLineMode = false;
+
+//modes intialization
 let isCircleMode = false;
 let isRectMode = false;
 let isFreehandMode = true;
@@ -224,7 +226,6 @@ twoDModeBtn.addEventListener('click', () => {
 
 colorPicker.addEventListener('input', (e) => {
     selectedColor = e.target.value;
-    // console.log(selectedColor);
     selectedColorShow.style.backgroundColor = selectedColor;
     colorPickerBtn.style.backgroundColor = selectedColor;
     if(colorPickerBtn.style.backgroundColor<='rgb(20, 20, 20)') colorPickerBtn.style.color='white';
@@ -439,7 +440,9 @@ applyTransformBtn.addEventListener('click', () => {
         notification('Please select a shape to transform');
         return;
     }
+       
     is2dTransformMode = true;
+    twoDModeBtn.style.backgroundColor = is2dTransformMode? 'red':'white'
     let originalShape = { ...selectedShape };
     let translateX = parseFloat(document.getElementById('translateX').value);
     let translateY = parseFloat(document.getElementById('translateY').value);
